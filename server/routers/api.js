@@ -44,7 +44,7 @@ apiRouter.post('/admin/login', async (req,res) => {
 
 apiRouter.get('/complaints', tokenExtractor, async (req,res) => {
     try{ 
-    const data = await db.collection('messages').find({}).sort({"createdAt" : 1}).toArray()
+    const data = await db.collection('messages').find({}).sort({"createdAt" : -1}).toArray()
         console.log(data);
     return res.status(200).json(data)
     } catch (err) {
