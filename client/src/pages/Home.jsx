@@ -1,13 +1,42 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom"
+
 
 export default function Home() {
     const navigate = useNavigate();
 
+    const [password, setPassword] = useState("")
+    const [err, setErr] = useState("")
+
+    function handleText(e){
+        setPassword(e.target.value)    
+    }
+
     function handleSubmit(){
         navigate('/submit')
     }
-        function handleAdmin(){
-        navigate('/admin')
+
+
+   async function enterAdmin(){
+        const res = await fetch(`http://localhost:3000/api/admin/login`, {
+        method: 'post',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({password})
+        });
+        const messageFromApi = await res.json()
+        if (['message'] in messageFromApi) {
+            localStorage.setItem("token", messageFromApi.token)
+            navigate('/admin')
+
+        }
+        else if(['error'] in messageFromApi) {
+            setErr(messageFromApi.error)
+            alert(err)
+        }
+        
+        
     }
 
   return (
@@ -20,10 +49,14 @@ export default function Home() {
 
         <div>
             <h2>מפקדים בלבד</h2>
-            <input type="text" />
+            <input
+            type="password"
+            placeholder="password" 
+            onChange={handleText}/>
             <label> :סיסמה</label>
             <br />
-            <button onClick={handleAdmin}>כניסה</button>
+            <button onClick={enterAdmin}>כניסה</button>
+            {err && <p>{err}</p>}
         </div>
     </div>
   )
